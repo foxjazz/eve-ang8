@@ -1,1 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
+:host {
+  display: block;
+
+  background-color: #1d2528;
+  color: #c4c6fb;
+}
+.realcolor {
+  background-color: #1d2528;
+  color: lightgrey;
+}

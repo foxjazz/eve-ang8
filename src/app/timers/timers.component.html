@@ -1,3 +1,55 @@
-<p>
-  timers works!
-</p>
+<h1 class="clred">{{Title}}</h1>
+
+<h2 class="bomtext"> {{notice}} <!-- diag: {{ndiag}}--></h2>
+<div class="row">
+  <div class="col-xs-12">
+    <!--<button type="button" class="btn2" (click)="subTimers()">Start Timers</button>-->
+    <button type="button" class="btn2" (click)="stopTimers()">Stop Timers</button>
+    <!--<h3 class="bomtext">{{notice}} to timers</h3>-->
+
+    <div class="container">
+      <form (ngSubmit)="onSubmit()" #timerForm="ngForm">
+        <div class="form-group">
+          <label for="nameof">Name:</label>
+          <input type="string" id="nameof" class="input-short" [(ngModel)]="timermodel.nameof" name="nameof">
+          <label for="timer">Time in seconds:</label>
+          <input type="string" id="timer" class="input-short" [(ngModel)]="timermodel.timer"  name="timer">
+          <label for="multi">multiplier:</label>
+          <input type="number" id="multi" class="input-short" [(ngModel)]="timermodel.multiplier" value="1" name="multi">
+        </div>
+        <button type="submit" class="btn">Add timer</button>
+      </form>
+    </div>
+    <table class="itemtable">
+      <tr>
+        <th>name</th>
+        <th class="makeroom">  </th>
+        <th>seconds</th>
+        <th>target date</th>
+        <th>status</th>
+        <th>start</th>
+        <th>stop</th>
+        <th>remove</th>
+        <th>time left</th>
+        <th>minutes left</th>
+
+      </tr>
+      <tr  *ngFor="let al of Timers" [class.itemselected]="item === selectedItem" (click)="onUsingTable(al)">
+
+        <td> {{al.nameof}} </td>
+        <td class="makeroom">  </td>
+
+        <td class="price">{{al.timer}} </td>
+        <td class="price">{{al.targetTime}} </td>
+        <td class="price">{{al.status}} </td>
+
+        <td class="price"><button id="start" class="btn">Start</button></td>
+        <td class="price"><button id="stop" class="btn">Stop</button></td>
+        <td class="price"><button id="remove" class="btn">Remove</button></td>
+        <td class="price">{{al.left}} </td>
+        <td class="price">{{al.minutesLeft}} </td>
+      </tr>
+    </table>
+
+  </div>
+</div>

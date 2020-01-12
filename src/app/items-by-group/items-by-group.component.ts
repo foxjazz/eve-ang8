@@ -1,5 +1,5 @@
 import { Component, OnInit } from "@angular/core";
-import {ItemsService} from "../shared/items.service";
+import {ItemsService} from "../services/items.service";
 import {
   Alert, cHub, CTradeItemPrice, ICategory, IGroup, IHub, IOrder, ITradeItemPrice, IType
 } from "../interfaces/IItems";
