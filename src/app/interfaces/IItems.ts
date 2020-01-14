@@ -40,7 +40,7 @@ export interface ItemGroup {name: string; href: string; id_str: string; id: numb
 
 }
 
-export class cHub implements IHub { name: string; regionId: Number; stationId: Number; }
+export class cHub implements IHub { name: string; regionId: number; stationId: number; }
 
 
 export interface Alert{type: IType; side: string; hub: cHub; price: number; targetPrice: number; percentage: number; qty: number;}
@@ -57,7 +57,7 @@ export class ItemBuildCls { items: Array<BItem>; }
 
 
 export interface IHub{
-  name: string; regionId: Number; stationId: Number;
+  name: string; regionId: number; stationId: number;
 }
 
 export interface ICategory {
@@ -110,6 +110,21 @@ export interface IType {
 export interface IOrder {
   order_id: number;
   type_id: number;
+  location_id: number;
+  volume_total: number;
+  volume_remain: number;
+  min_volume: number;
+  price: number;
+  is_buy_order: boolean;
+  duration: number;
+  issued: Date;
+  range: string;
+}
+
+export interface IOrderL {
+  order_id: number;
+  type_id: number;
+  system_id: number;
   location_id: number;
   volume_total: number;
   volume_remain: number;

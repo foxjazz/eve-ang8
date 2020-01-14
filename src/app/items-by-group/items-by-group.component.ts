@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import {ItemsService} from "../services/items.service";
 import {
-  Alert, cHub, CTradeItemPrice, ICategory, IGroup, IHub, IOrder, ITradeItemPrice, IType
-} from "../interfaces/IItems";
+  Alert, cHub, CTradeItemPrice, ICategory, IGroup, IHub, IOrder, IOrderL, ITradeItemPrice, IType
+} from '../interfaces/IItems';
 import {ISortPattern, priSort} from "../Patterns/prioritySort";
 import {jsonpCallbackContext} from "@angular/common/http/src/module";
 
@@ -89,6 +89,42 @@ export class ItemsByGroupComponent implements OnInit {
     //localStorage.setItem("tradeHubs", JSON.stringify(this.tradeItemPriceList));
   }
 
+  public getLowestPrice(type: IType, hub: IHub, b: ITradeItemPrice, orders: IOrderL[]) {
+    let retval  = NaN;
+    for (let i = 0; i < orders.length; i++) {
+      if (isNaN(retval) || orders[i].price < retval) {
+        retval = orders[i].price;
+      }
+    }
+    this.setItemPrice(hub.name, retval, b);
+  }
+
+  public setHubPrice2(type: IType, hub: IHub, b: ITradeItemPrice){
+    this.is.sinkPrice.subscribe(regionId => {
+      switch (regionId) {
+        case 10000002: {
+          this.getLowestPrice(type, hub, b, this.is.JitaOrders);
+          break;
+        }
+        case 10000043: {
+          this.getLowestPrice(type, hub, b, this.is.AmarrOrders);
+          break;
+        }
+        case 10000032: {
+          this.getLowestPrice(type, hub, b, this.is.DodixieOrders);
+          break;
+        }
+        case 10000030: {
+          this.getLowestPrice(type, hub, b, this.is.RensOrders);
+          break;
+        }
+        case 10000042: {
+          this.getLowestPrice(type, hub, b, this.is.HekOrders);
+          break;
+        }
+    });
+    this.is.getPriceDataPages(hub.regionId, type.type_id, hub.stationId);
+  }
   public  setHubPrice(type: IType, hub: IHub, b: ITradeItemPrice)
   {
      this.is.getPriceDataUri(hub.regionId.toString()).subscribe(res => {
@@ -273,29 +309,33 @@ export class ItemsByGroupComponent implements OnInit {
   }
 
   onSelectType(it: IType){
-    if(this.selItemTypes == null)
+    if (this.selItemTypes == null) {
       this.selItemTypes = new Array<IType>();
-    let note = true;
-    for(let itt of this.selItemTypes){
-      if(itt.name === it.name)
-        note = false;
     }
-    if(note) {
+    let note = true;
+    for (let itt of this.selItemTypes) {
+      if (itt.name === it.name) {
+        note = false;
+      }
+    }
+    if (note) {
       this.selItemTypes.push(it);
     }
     note = true;
-    for(const ti of this.tradeItemPriceList){
-      if(ti.item.name === it.name)
+    for (const ti of this.tradeItemPriceList) {
+      if (ti.item.name === it.name) {
         note = false;
+      }
     }
     if(note) {
       const b = new CTradeItemPrice();
       b.item = it;
       for (const h of this.hubs) {
-        this.setHubPrice(it, h, b);
+        this.setHubPrice2(it, h, b);
       }
-      if (this.tradeItemPriceList == null)
+      if (this.tradeItemPriceList == null) {
         this.tradeItemPriceList = new Array<ITradeItemPrice>();
+      }
       this.tradeItemPriceList.push(b);
     }
 
