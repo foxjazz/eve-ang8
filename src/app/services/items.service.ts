@@ -28,6 +28,7 @@ export class ItemsService {
     this.typesUri = "https://esi.evetech.net/latest/universe/types/";
     this.graphicUri = "https://esi.evetech.net/latest/universe/graphics/";
     this.ordersUri = "https://esi.evetech.net/latest/markets/";
+// https://esi.evetech.net/latest/markets/10000042/orders/?datasource=tranquility&order_type=sell&page=1&type_id=36
 
   }
 

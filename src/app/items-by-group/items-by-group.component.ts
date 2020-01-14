@@ -89,9 +89,9 @@ export class ItemsByGroupComponent implements OnInit {
     //localStorage.setItem("tradeHubs", JSON.stringify(this.tradeItemPriceList));
   }
 
-  public async setHubPrice(type: IType, hub: IHub, b: ITradeItemPrice)
+  public  setHubPrice(type: IType, hub: IHub, b: ITradeItemPrice)
   {
-    await this.is.getPriceDataUri(hub.regionId.toString()).subscribe(res => {
+     this.is.getPriceDataUri(hub.regionId.toString()).subscribe(res => {
         let retval  = NaN;
         let hubName = hub.name;
         if(type == null)
