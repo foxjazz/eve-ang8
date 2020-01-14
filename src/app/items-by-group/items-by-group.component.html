@@ -1,102 +1,109 @@
 
 
 <div class="gridc_itemsByGroup">
-  <h1 class="h1"> Price Data </h1>
+  <div class="itemC1">
+    <h1 class="h1"> Price Data </h1>
 
-  <div>test: {{test}}</div>
+    <div>test: {{test}}</div>
 
-  <div class="itemsByCategory items">
-    <ul *ngFor="let c of sortedCategories" [class.selected]="c === selectedCategory" (click)="onSelectCategory(c)">
+    <div class="itemsByCategory items">
+      <ul *ngFor="let c of sortedCategories" [class.selected]="c === selectedCategory" (click)="onSelectCategory(c)">
+        <li>
+          <span class="arrow">{{getArrow(c)}}</span>{{c.name}}
+          <div *ngIf="isSelected(c)" class="itemsByCategory groups">
+            <ul  *ngFor="let g of groups" [class.selected]="g === selectedGroup" (click)="onSelectGroup(g)">
+              <li>
+                <span class="arrow">{{getArrowGrp(g)}}</span>{{g.name}}
+                <div *ngIf="isSelectedGroup(g)">
+                  <ul *ngFor="let itm of types" (click)="onSelectType(itm)">
+                    <li>{{itm.name}}</li>
+                  </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!--
+                  <app-treeview *ngIf="isSelected(c)" [itemGroups]="getChildren(c)" (onItemsSelect)="onItemsSelect($event)">
+                  </app-treeview>
+          -->
+        </li>
+      </ul>
 
-      <li>
-        <span class="arrow">{{getArrow(c)}}</span>{{c.name}}
-        <div *ngIf="isSelected(c)" class="itemsByCategory groups">
-          <ul  *ngFor="let g of groups" [class.selected]="g === selectedGroup" (click)="onSelectGroup(g)">
-            <li>
-              <span class="arrow">{{getArrowGrp(g)}}</span>{{g.name}}
-            </li>
-          </ul>
-        </div>
-        <!--
-                <app-treeview *ngIf="isSelected(c)" [itemGroups]="getChildren(c)" (onItemsSelect)="onItemsSelect($event)">
-                </app-treeview>
-        -->
-      </li>
-    </ul>
+    </div>
 
+    <!-- <div class="itemsByGroup items">
+       <ul *ngFor="let c of groups" [class.selected]="c === selectedGroup" (click)="onSelectGroup(c)">
+         <li>
+           {{c.name}}
+         </li>
+       </ul>
+
+     </div>-->
+    <div class="itemsByGroup items">
+      <ul *ngFor="let t of types" [class.selected]="t === selectedType" (click)="onSelectType(t)">
+        <li>
+          {{t.name}}
+        </li>
+      </ul>
+    </div>
   </div>
+  <div class="itemC2">
+    <div class="itemsByPrice">
+      <div class="btn" (click)="refreshList()">refresh list</div>
+      <table class="itemtable">
+        <tr>
+          <th>Img</th>
+          <th>type</th>
+          <th class="makeroom">  </th>
+          <th>bom</th>
 
-  <!-- <div class="itemsByGroup items">
-     <ul *ngFor="let c of groups" [class.selected]="c === selectedGroup" (click)="onSelectGroup(c)">
-       <li>
-         {{c.name}}
-       </li>
-     </ul>
+          <th class="price">Jita price </th>
+          <th class="price">Amarr price</th>
+          <th class="price">Dodixie price</th>
+          <th class="price">Rens price</th>
+          <th class="price">Hek price </th>
+          <th class="price">Action</th>
+          <!--<th class="price">Alerts</th>-->
+          <!--
+                                  <td class="price">Tash-Murkon price </td>
+                                  <td class="price">Oursulaert price </td>
+          -->
 
-   </div>-->
-  <div class="itemsByGroup items">
-    <ul *ngFor="let t of types" [class.selected]="t === selectedType" (click)="onSelectType(t)">
-      <li>
-        {{t.name}}
-      </li>
-    </ul>
-  </div>
+        </tr>
+        <tr  *ngFor="let it of tradeItemPriceList" [class.itemselected]="it === selectedItem" (click)="onRemoveItem(it)">
 
-  <div class="itemsByPrice">
-    <div class="btn" (click)="refreshList()">refresh list</div>
-    <table class="itemtable">
-      <tr>
-        <th>Img</th>
-        <th>type</th>
-        <th class="makeroom">  </th>
-        <th>bom</th>
+          <td class="image"> <img id="img" src = "https://imageserver.eveonline.com/Type/{{it.item.type_id}}_32.png" class="image">  </td>
+          <td> {{ it.item.name }} </td>
+          <td class="makeroom">  </td>
+          <td class="bomtext" alt="bom"> <img src="assets/images/bom.png" alt="bom"> </td>
 
-        <th class="price">Jita price </th>
-        <th class="price">Amarr price</th>
-        <th class="price">Dodixie price</th>
-        <th class="price">Rens price</th>
-        <th class="price">Hek price </th>
-        <th class="price">Action</th>
-        <!--<th class="price">Alerts</th>-->
+          <td class="price">{{it.jitaPrice | mPipe}} </td>
+          <td class="price">{{it.amarrPrice | mPipe}} </td>
+          <td class="price">{{it.dodixiePrice | mPipe}} </td>
+          <td class="price">{{it.rensPrice | mPipe}} </td>
+          <td class="price">{{it.hekPrice | mPipe}} </td>
+          <td class="price"><button id="remove" class="btn">Remove</button></td>
+          <!--<td>{{it.item.graphic_id}}</td>-->
+          <!--<td class="price"><button id="addAlert" class="btn">Add Alert</button></td>-->
+
+          <!--   <td class="price">{{it.Tashprice | moneyPipe}} </td>
+             <td class="price">{{it.Ourprice | moneyPipe}} </td>-->
+        </tr>
+      </table>
+      <ul *ngIf="selType != null" class="ulist">
+        <li>{{selType.description}}</li>
+        <li>capacity: {{selType.capacity}}</li>
         <!--
-                                <td class="price">Tash-Murkon price </td>
-                                <td class="price">Oursulaert price </td>
+              <li>{{selType.dogma_attributes | json}}</li>
+              <li>{{selType.dogma_effects | json}}</li>
         -->
-
-      </tr>
-      <tr  *ngFor="let it of tradeItemPriceList" [class.itemselected]="it === selectedItem" (click)="onRemoveItem(it)">
-
-        <td class="image"> <img id="img" src = "https://imageserver.eveonline.com/Type/{{it.item.type_id}}_32.png" class="image">  </td>
-        <td> {{ it.item.name }} </td>
-        <td class="makeroom">  </td>
-        <td class="bomtext" alt="bom"> <img src="assets/images/bom.png" alt="bom"> </td>
-
-        <td class="price">{{it.jitaPrice | mPipe}} </td>
-        <td class="price">{{it.amarrPrice | mPipe}} </td>
-        <td class="price">{{it.dodixiePrice | mPipe}} </td>
-        <td class="price">{{it.rensPrice | mPipe}} </td>
-        <td class="price">{{it.hekPrice | mPipe}} </td>
-        <td class="price"><button id="remove" class="btn">Remove</button></td>
-        <!--<td>{{it.item.graphic_id}}</td>-->
-        <!--<td class="price"><button id="addAlert" class="btn">Add Alert</button></td>-->
-
-        <!--   <td class="price">{{it.Tashprice | moneyPipe}} </td>
-           <td class="price">{{it.Ourprice | moneyPipe}} </td>-->
-      </tr>
-    </table>
-    <ul *ngIf="selType != null" class="ulist">
-      <li>{{selType.description}}</li>
-      <li>capacity: {{selType.capacity}}</li>
-      <!--
-            <li>{{selType.dogma_attributes | json}}</li>
-            <li>{{selType.dogma_effects | json}}</li>
-      -->
-      <li>mass: {{selType.mass}}</li>
-      <li>radius: {{selType.radius}}</li>
-      <li>volume: {{selType.volume}}</li>
-      <li>packaged volume: {{selType.packaged_volume}}</li>
-      <li>published: {{selType.published}}</li>
-    </ul>
+        <li>mass: {{selType.mass}}</li>
+        <li>radius: {{selType.radius}}</li>
+        <li>volume: {{selType.volume}}</li>
+        <li>packaged volume: {{selType.packaged_volume}}</li>
+        <li>published: {{selType.published}}</li>
+      </ul>
+    </div>
   </div>
 </div>
 

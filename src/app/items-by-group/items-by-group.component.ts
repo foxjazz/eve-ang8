@@ -6,9 +6,6 @@ import {
 import {ISortPattern, priSort} from "../Patterns/prioritySort";
 import {jsonpCallbackContext} from "@angular/common/http/src/module";
 
-
-
-
 @Component({
   selector: "app-items-by-group",
   templateUrl: "./items-by-group.component.html",
@@ -96,13 +93,14 @@ export class ItemsByGroupComponent implements OnInit {
   {
     await this.is.getPriceDataUri(hub.regionId.toString()).subscribe(res => {
         let retval  = NaN;
+        let hubName = hub.name;
         if(type == null)
           return;
         for (const ll of res) {
           if (ll.is_buy_order === false && ll.type_id === type.type_id) {
             if (isNaN(retval) || ll.price < retval) {
               retval = ll.price;
-              this.setItemPrice(hub.name, retval, b);
+              this.setItemPrice(hubName, retval, b);
             }
           }
         }
@@ -121,7 +119,12 @@ export class ItemsByGroupComponent implements OnInit {
     }
     return false;
   }
-
+  isSelectedGroup(g: IGroup): boolean {
+    if (JSON.stringify(g) === JSON.stringify(this.selectedGroup)) {
+        return true;
+    }
+    return false;
+  }
   setItemPrice(hub: string, price: number, o: ITradeItemPrice) {
     switch (hub) {
       case "Jita":
@@ -313,6 +316,7 @@ export class ItemsByGroupComponent implements OnInit {
             if (left.name < right.name) return -1;
             if (left.name > right.name) return 1; else return 0;
           });
+          console.log(this.types);
         }
       });
 
