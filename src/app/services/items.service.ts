@@ -41,26 +41,16 @@ export class ItemsService {
 
 
   public async getPriceDataPages(regionId: number, itemId: number, stationId: number) {
-      let uriBase = "https://esi.evetech.net/latest/markets/RegionId/orders/?datasource=tranquility&order_type=sell&page=PageId&type_id=ItemId";
+      let uriBase = "https://esi.evetech.net/latest/markets/RegionId/orders/?datasource=tranquility&order_type=sell&type_id=ItemId";
       uriBase = uriBase.replace("ItemId", itemId.toString());
       uriBase = uriBase.replace("RegionId", regionId.toString());
-
-      const uris = [];
-      for (let i = 1; i < 3; i++) {
-        const uriPage = uriBase.replace("PageId", i.toString());
-        const uriAction = this.http.get<IOrderL[]>(uriPage);
-        uris.push(uriAction);
-      }
-      await forkJoin(uris).subscribe(data => {
-
+      await this.http.get<IOrderL[]>(uriBase).subscribe(data => {
         const orders = [];
-        for (let i1 = 0; i1 < data.length; i1++) {
-          const morders: IOrderL[] = <IOrderL[]> data[i1];
-          for (let ii = 0; ii < morders.length; ii++) {
-            if (morders[ii].location_id === stationId) {
-              orders.push(morders[ii]);
-            }
+        for (let ii = 0; ii < data.length; ii++) {
+          if (data[ii].location_id === stationId) {
+            orders.push(data[ii]);
           }
+
         }
         const orderSub: IOrderSub = {regionId: regionId, orderL: Object.assign(orders)};
         this.sinkPrice.next(orderSub);
