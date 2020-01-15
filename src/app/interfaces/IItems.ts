@@ -120,7 +120,11 @@ export interface IOrder {
   issued: Date;
   range: string;
 }
+export interface IOrderSub {
+  orderL: IOrderL[];
+  regionId: number;
 
+}
 export interface IOrderL {
   order_id: number;
   type_id: number;

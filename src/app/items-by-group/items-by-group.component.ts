@@ -5,6 +5,7 @@ import {
 } from '../interfaces/IItems';
 import {ISortPattern, priSort} from "../Patterns/prioritySort";
 import {jsonpCallbackContext} from "@angular/common/http/src/module";
+import {Subject} from 'rxjs/Subject';
 
 @Component({
   selector: "app-items-by-group",
@@ -13,6 +14,7 @@ import {jsonpCallbackContext} from "@angular/common/http/src/module";
 })
 export class ItemsByGroupComponent implements OnInit {
 
+  public finishedPriceLoad: Subject<ITradeItemPrice>;
   public groups: Array<IGroup>;
   public usGroups: Array<IGroup>;
   public categories: Array<ICategory>;
@@ -26,6 +28,8 @@ export class ItemsByGroupComponent implements OnInit {
   public unsortedTypes: Array<IType>;
   public test: string;
   public selItemTypes: IType[];
+  private bb: CTradeItemPrice;
+  private currentType: IType;
 
   public hubs: IHub[];
   public tradeItemPriceList: ITradeItemPrice[];
@@ -89,40 +93,17 @@ export class ItemsByGroupComponent implements OnInit {
     //localStorage.setItem("tradeHubs", JSON.stringify(this.tradeItemPriceList));
   }
 
-  public getLowestPrice(type: IType, hub: IHub, b: ITradeItemPrice, orders: IOrderL[]) {
+  public getLowestPrice(type: IType, regionId: number, b: ITradeItemPrice, orders: IOrderL[]) {
     let retval  = NaN;
     for (let i = 0; i < orders.length; i++) {
       if (isNaN(retval) || orders[i].price < retval) {
         retval = orders[i].price;
       }
     }
-    this.setItemPrice(hub.name, retval, b);
+    this.setItemPrice(regionId, retval, b);
   }
 
-  public setHubPrice2(type: IType, hub: IHub, b: ITradeItemPrice){
-    this.is.sinkPrice.subscribe(regionId => {
-      switch (regionId) {
-        case 10000002: {
-          this.getLowestPrice(type, hub, b, this.is.JitaOrders);
-          break;
-        }
-        case 10000043: {
-          this.getLowestPrice(type, hub, b, this.is.AmarrOrders);
-          break;
-        }
-        case 10000032: {
-          this.getLowestPrice(type, hub, b, this.is.DodixieOrders);
-          break;
-        }
-        case 10000030: {
-          this.getLowestPrice(type, hub, b, this.is.RensOrders);
-          break;
-        }
-        case 10000042: {
-          this.getLowestPrice(type, hub, b, this.is.HekOrders);
-          break;
-        }
-    });
+  public setHubPrice2(type: IType, hub: IHub, b: ITradeItemPrice) {
     this.is.getPriceDataPages(hub.regionId, type.type_id, hub.stationId);
   }
   public  setHubPrice(type: IType, hub: IHub, b: ITradeItemPrice)
@@ -130,16 +111,17 @@ export class ItemsByGroupComponent implements OnInit {
      this.is.getPriceDataUri(hub.regionId.toString()).subscribe(res => {
         let retval  = NaN;
         let hubName = hub.name;
-        if(type == null)
+        if (type == null)
           return;
         for (const ll of res) {
           if (ll.is_buy_order === false && ll.type_id === type.type_id) {
             if (isNaN(retval) || ll.price < retval) {
               retval = ll.price;
-              this.setItemPrice(hubName, retval, b);
+              this.setItemPrice(0, retval, b);
             }
           }
         }
+
       }
     );
   }
@@ -161,39 +143,45 @@ export class ItemsByGroupComponent implements OnInit {
     }
     return false;
   }
-  setItemPrice(hub: string, price: number, o: ITradeItemPrice) {
-    switch (hub) {
-      case "Jita":
+  setItemPrice(regionId: number, price: number, o: ITradeItemPrice) {
+    switch (regionId) {
+      case 10000002:
         o.jitaPrice = price;
+        o.jita = true;
         break;
-      case "Amarr":
+      case 10000043:
         o.amarrPrice = price;
+        o.amarr = true;
         break;
-      case "Dodixie":
+      case 10000032:
         o.dodixiePrice = price;
+        o.dodixie = true;
         break;
-      case "Rens":
+      case 10000030:
         o.rensPrice = price;
+        o.rens = true;
         break;
-      case "Hek":
+      case 10000042:
         o.hekPrice = price;
+        o.hek = true;
         break;
+    }
+    if (o.hek && o.rens && o.dodixie && o.amarr && o.jita) {
+      this.finishedPriceLoad.next(o);
     }
   }
 
   onRemoveItem ( item: ITradeItemPrice)  {
-    if (event.target["alt"] === "bom")
-    {
+    if (event.target["alt"] === "bom") {
       //this.onGetBOM(item);
     }
-    if(event.target["id"] === "img"){
+    if(event.target["id"] === "img") {
       this.selType = item.item;
     }
     /* else if(event.target["alt"]==="save event"){
        this.saveEvent(item);
      }*/
-    else if (event.target["alt"] === "fallsbelow")
-    {
+    else if (event.target["alt"] === "fallsbelow") {
       return;
     }
     else if (event.target["id"] === "remove"){
@@ -216,7 +204,7 @@ export class ItemsByGroupComponent implements OnInit {
       }
       localStorage.setItem("SelEveItems", JSON.stringify(this.selItemTypes));
     }
-    else if (event.target["id"] === "addAlert"){
+    else if (event.target["id"] === "addAlert") {
       const eid = localStorage.getItem("EveId");
       if (eid != null && eid.length > 0){
         const res = localStorage.getItem("EveAlerts");
@@ -265,7 +253,7 @@ export class ItemsByGroupComponent implements OnInit {
   }*/
 
   sortCategories(){
-    let ps = new priSort();
+    const ps = new priSort();
     this.sortedCategories = ps.sort(this.categories, this.categoryPattern);
 
   }
@@ -327,19 +315,31 @@ export class ItemsByGroupComponent implements OnInit {
         note = false;
       }
     }
-    if(note) {
+    if (note) {
       const b = new CTradeItemPrice();
       b.item = it;
+      b.amarrPrice = 0;
+      b.dodixiePrice = 0;
+      b.hekPrice = 0;
+      b.jitaPrice = 0;
+      b.rensPrice = 0;
+      b.amarr = false;
+      b.jita = false;
+      b.hek = false;
+      b.dodixie = false;
+      b.rens = false;
+      if (this.tradeItemPriceList == null) {
+        this.tradeItemPriceList = new Array<ITradeItemPrice>();
+
+      }
+      this.bb = b;
+      this.currentType = it;
       for (const h of this.hubs) {
         this.setHubPrice2(it, h, b);
       }
-      if (this.tradeItemPriceList == null) {
-        this.tradeItemPriceList = new Array<ITradeItemPrice>();
-      }
-      this.tradeItemPriceList.push(b);
     }
-
   }
+
   onSelectGroup(ig: IGroup){
 
     this.unsortedTypes = new Array<IType>();
@@ -389,8 +389,19 @@ export class ItemsByGroupComponent implements OnInit {
   ngOnInit() {
 
     const types = localStorage.getItem("SelEveItems");
-    this.selItemTypes = JSON.parse(types);
 
+    this.is.sinkPrice.subscribe(oSub => {
+      this.getLowestPrice(this.currentType, oSub.regionId, this.bb, oSub.orderL);
+    });
+
+    this.selItemTypes = JSON.parse(types);
+    if (this.finishedPriceLoad == null) {
+      this.finishedPriceLoad = new Subject<ITradeItemPrice>();
+    }
+
+    this.finishedPriceLoad.subscribe(tp => {
+      this.tradeItemPriceList.push(tp);
+    });
     console.log("get categories");
     this.is.getCategories().subscribe(x => {
       if (x != null)
