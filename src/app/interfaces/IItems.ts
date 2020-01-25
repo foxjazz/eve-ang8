@@ -14,8 +14,36 @@ export interface ITradeItemPrice{
   hek:boolean;
 }
 
+export interface ITradeItemMicroPrice {
+  item: IItem;
+  jitaPrice: number;
+  amarrPrice: number;
+  dodixiePrice: number;
+  rensPrice: number;
+  hekPrice: number;
+  jita: boolean;
+  amarr: boolean;
+  dodixie: boolean;
+  rens:boolean;
+  hek:boolean;
+}
+
 export class CTradeItemPrice implements ITradeItemPrice{
   item: IType;
+  jitaPrice: number;
+  amarrPrice: number;
+  dodixiePrice: number;
+  rensPrice: number;
+  hekPrice: number;
+  jita: boolean;
+  amarr: boolean;
+  dodixie: boolean;
+  rens:boolean;
+  hek:boolean;
+}
+
+export class CTradeItemMicroPrice implements ITradeItemMicroPrice{
+  item: IItem;
   jitaPrice: number;
   amarrPrice: number;
   dodixiePrice: number;
@@ -88,7 +116,10 @@ export interface DogmaEffect {
   effect_id: number;
   is_default: boolean;
 }
-
+export interface IItem {
+  name: string;
+  type_id: number;
+}
 export interface IType {
   type_id: number;
   name: string;

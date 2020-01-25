@@ -2,9 +2,37 @@
   display: block;
 
   background-color: #1d2528;
-  color: #c4c6fb;
+  color: lightblue;
 }
 .realcolor {
   background-color: #1d2528;
   color: lightgrey;
 }
+
+
+body {
+  color: lightcyan;
+}
+.gs{
+  color: lightcyan;
+  font-size: large;
+
+}
+ul {
+  color: lightgreen;
+  font-size: large;
+}
+li {
+  display: inline;
+}
+li a{
+  display: block;
+  color: lightblue;
+  font-size: large;
+}
+li a:hover{
+  color: lightcoral;
+}
+
+
+

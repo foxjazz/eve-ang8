@@ -15,11 +15,14 @@ import {FormsModule} from "@angular/forms";
 import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {ItemsService} from "./services/items.service";
 import {RegionService} from "./services/region.service";
+import { JustItemsComponent } from './just-items/just-items.component';
+import {ItemonlyService} from './services/itemonly.service';
 
 
 const appRoutes: Routes = [
-  { path: "regions", component: RegionsComponent },
+  {path: "", component: JustItemsComponent},
   {path: "items", component: ItemsByGroupComponent},
+  {path: "just", component: JustItemsComponent},
   {path: "develop", component: DevelopComponent},
   {path: "timers", component: TimersComponent}
 ];
@@ -35,6 +38,7 @@ const appRoutes: Routes = [
     RegionsComponent,
     mPipe,
     moneyPipe,
+    JustItemsComponent,
   ],
   imports: [
     RouterModule.forRoot(
@@ -45,7 +49,7 @@ const appRoutes: Routes = [
     BrowserModule,
     HttpClientModule,
   ],
-  providers:  [RegionService, ItemsService],
+  providers:  [RegionService, ItemsService, ItemonlyService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
